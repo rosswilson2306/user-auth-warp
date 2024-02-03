@@ -6,17 +6,17 @@ use warp::{http::StatusCode, Rejection, Reply};
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("wrong credentials")]
-    WrongCredentialsError,
+    WrongCredentials,
     #[error("jwt token not valid")]
-    JWTTokenError,
+    InvalidJWTToken,
     #[error("jwt token creation error ")]
-    JWTTokenCreationError,
+    JWTTokenCreation,
     #[error("no auth error")]
-    NoAuthHeaderError,
+    NoAuthHeader,
     #[error("invalid auth header")]
-    InvalidAuthHeaderError,
+    InvalidAuthHeader,
     #[error("no permission")]
-    NoPermissionError,
+    NoPermission,
 }
 
 impl warp::reject::Reject for Error {}
@@ -32,10 +32,10 @@ pub async fn handle_rejection(err: Rejection) -> std::result::Result<impl Reply,
         (StatusCode::NOT_FOUND, "Not Found".to_string())
     } else if let Some(e) = err.find::<Error>() {
         match e {
-            Error::WrongCredentialsError => (StatusCode::FORBIDDEN, e.to_string()),
-            Error::NoPermissionError => (StatusCode::UNAUTHORIZED, e.to_string()),
-            Error::JWTTokenError => (StatusCode::UNAUTHORIZED, e.to_string()),
-            Error::JWTTokenCreationError => (
+            Error::WrongCredentials => (StatusCode::FORBIDDEN, e.to_string()),
+            Error::NoPermission => (StatusCode::UNAUTHORIZED, e.to_string()),
+            Error::InvalidJWTToken => (StatusCode::UNAUTHORIZED, e.to_string()),
+            Error::JWTTokenCreation => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Internal Server Error".to_string(),
             ),
